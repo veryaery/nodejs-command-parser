@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/xynfa/nodejs-command-parser/issues"
   },
-  "homepage": "https://github.com/xynfa/nodejs-command-parser#readme"
+  "homepage": "https://github.com/xynfa/nodejs-command-parser#readme",
+  "dependencies": {
+    "promise": "^8.0.1"
+  }
 }
