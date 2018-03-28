@@ -7,21 +7,43 @@ function excess(sepperator, input) {
 }
 
 function merge(input) {
-    let output = [];
+    let output = {};
 
     for (const key in input) {
         const values = input[key];
 
         for (const value of values) {
-            output.push(key + value.name);
+            output[key + value.name] = value;
         }
     }
 
     return output;
 }
 
-function scan(input, merged) {
-    
+function scan(input, merged, caseSensitive) {
+    let cur = "";
+    let output = null;
+
+    for (const char of input.split("").concat([ "" ])) {
+        cur += caseSensitive ? char : char.toLowerCase();
+
+        for (const key in merged) {
+            const value = merged[key];
+            const name = caseSensitive ? name : name.toLowerCase();
+
+            if (name.toLowerCase() == cur.toLowerCase()) {
+                output = value;
+            } else if (!name.toLowerCase().startsWith(cur.toLowerCase())) {
+                delete merged[key];
+            }
+        }
+
+        if (Object.keys(merged).length == 0) {
+            break;
+        }
+    }
+
+    return output;
 }
 
 // exports
