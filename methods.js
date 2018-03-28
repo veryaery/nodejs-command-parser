@@ -1,3 +1,11 @@
+function excess(sepperator, input) {
+    if (input.length > 0 && (input.length == sepperator.length || !input.startsWith(sepperator))) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function merge(input) {
     let output = [];
 
@@ -13,4 +21,5 @@ function merge(input) {
 }
 
 // exports
+exports.excess = excess;
 exports.merge = merge;
