@@ -6,9 +6,19 @@ const methods = require("../methods.js");
 
 class Option {
 
-    parse(input, parent) {
+    parse(sepperator, input, parent) {
         return new Promise((resolve, reject) => {
+            let args = {};
 
+            if (this.args && this.args.length > 0) {
+                let argIndex = 0;
+
+                while (input.length > 0) {
+                    
+                }
+            }
+
+            resolve(args);
         });
     }
 

@@ -1,17 +1,11 @@
 function merge(input) {
     let output = [];
 
-    if (input instanceof Object) {
-        for (const key in input) {
-            const values = input[key];
+    for (const key in input) {
+        const values = input[key];
 
-            if (values instanceof Array) {
-                for (const value of values) {
-                    if (value instanceof String) {
-                        output.push(key + value);
-                    }
-                }
-            }
+        for (const value of values) {
+            output.push(key + value.name);
         }
     }
 
