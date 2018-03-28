@@ -1,5 +1,8 @@
 function excess(sepperator, input) {
-    if (input.length > 0 && (input.length == sepperator.length || !input.startsWith(sepperator))) {
+    if (
+        input.length > 0 &&
+        (input.length == sepperator.length || !input.startsWith(sepperator))
+    ) {
         return true;
     } else {
         return false;
@@ -24,7 +27,7 @@ function scan(input, merged, caseSensitive) {
     let cur = "";
     let output = null;
 
-    for (const char of input.split("").concat([ "" ])) {
+    for (const char of input.split("")) {
         cur += caseSensitive ? char : char.toLowerCase();
 
         for (const key in merged) {

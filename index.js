@@ -10,4 +10,3 @@ exports.Argument = Argument;
 exports.Command = Command;
 exports.Fault = Fault;
 exports.Option = Option;
-exports.Parser = Parser;

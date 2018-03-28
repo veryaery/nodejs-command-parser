@@ -45,7 +45,7 @@ class Option {
                     const arg = this._args[argIndex];
 
                     try {
-                        args[arg.name] = await arg.type.test(input);
+                        args[arg.name] = await arg.type.parse(input);
                     } catch (error) {
                         return reject(error);
                     }
