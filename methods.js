@@ -32,7 +32,10 @@ function scan(input, merged, caseSensitive) {
             const name = caseSensitive ? name : name.toLowerCase();
 
             if (name.toLowerCase() == cur.toLowerCase()) {
-                output = value;
+                output = {
+                    key: key,
+                    value: value
+                };
             } else if (!name.toLowerCase().startsWith(cur.toLowerCase())) {
                 delete merged[key];
             }

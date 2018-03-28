@@ -20,18 +20,24 @@ class Option {
 
     async parse(sepperator, input, parent) {
         return new Promise(async (resolve, reject) => {
-            const merged = methods.merge(parent.options);
+            let merged = null;
             let args = {};
 
-            if (this.args && this.args.length > 0) {
+            if (parent.options && parent.options.length > 0) {
+                merged = methods.merge(parent.options);
+            }
+
+            if (this._args && this._args.length > 0) {
                 let argIndex = 0;
 
                 while (input.length > 0) {
-                    if (methods.scan(input, merged)) {
-                        break;
+                    if (merged) {
+                        if (methods.scan(input, merged)) {
+                            break;
+                        }
                     }
 
-                    const arg = this.args[argIndex];
+                    const arg = this._args[argIndex];
 
                     try {
                         args[arg.name] = await arg.type.test(input);
@@ -39,7 +45,7 @@ class Option {
                         return reject(error);
                     }
 
-                    if (argIndex == this.args.length) {
+                    if (argIndex == this._args.length) {
                         break;
                     } else {
                         argIndex++;
@@ -50,8 +56,8 @@ class Option {
                     }
                 }
 
-                if (argIndex < this.args.length - 1) {
-                    const arg = this.args[argIndex];
+                if (argIndex < this._args.length - 1) {
+                    const arg = this._args[argIndex];
 
                     if (!arg.optional) {
                         return reject(new Fault("REQUIRED", `argument ${arg.name} is required`, { arg: arg }));
