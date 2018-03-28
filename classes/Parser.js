@@ -6,13 +6,13 @@ const Command = require("./Command.js");
 
 class Parser extends Command {
 
-    get sepperator() {
-        return " ";
-    }
+    // getters and set methods
+    get sepperator() { return this._sepperator; }
+    setSepperator(sepperator) { this._sepperator = sepperator; return this; }
 
     parse(input) {
         return new Promise((resolve, reject) => {
-            super.parse(this.sepperator, input)
+            super.parse(this._sepperator, input)
                 .then(resolve)
                 .catch(reject);
         });
