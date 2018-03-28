@@ -20,16 +20,21 @@ class Option {
 
     async parse(sepperator, input, parent) {
         return new Promise(async (resolve, reject) => {
+            const merged = methods.merge(parent.options);
             let args = {};
 
             if (this.args && this.args.length > 0) {
                 let argIndex = 0;
 
                 while (input.length > 0) {
+                    if (methods.scan(input, merged)) {
+                        break;
+                    }
+
                     const arg = this.args[argIndex];
 
                     try {
-                        args[arg.name] = await arg.type.test();
+                        args[arg.name] = await arg.type.test(input);
                     } catch (error) {
                         return reject(error);
                     }

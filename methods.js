@@ -20,6 +20,11 @@ function merge(input) {
     return output;
 }
 
+function scan(input, merged) {
+    
+}
+
 // exports
 exports.excess = excess;
 exports.merge = merge;
+exports.scan = scan;

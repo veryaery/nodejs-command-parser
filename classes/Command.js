@@ -9,7 +9,7 @@ class Command extends Option {
 
     parse(sepperator, input) {
         return new Promise((resolve, reject) => {
-
+            
         });
     }
 
