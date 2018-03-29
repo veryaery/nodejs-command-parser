@@ -10,9 +10,9 @@ class Parser extends Command {
     get sepperator() { return this._sepperator; }
     setSepperator(sepperator) { this._sepperator = sepperator; return this; }
 
-    parse(input) {
+    parse(input, custom) {
         return new Promise((resolve, reject) => {
-            super.parse(this._sepperator, input)
+            super.parse(this._sepperator, input, custom)
                 .then(resolve)
                 .catch(reject);
         });

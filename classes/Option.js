@@ -11,7 +11,7 @@ class Option {
         this._name = name;
     }
 
-    // getters and set methods
+    // getters, setters, and set methods
     get name() { return this._name; }
     setName(name) { this._name = name; return this; }
 
@@ -23,7 +23,7 @@ class Option {
         return this;
     }
 
-    async parse(sepperator, input, parent) {
+    async parse(sepperator, input, parent, custom) {
         return new Promise(async (resolve, reject) => {
             let merged = null;
             let args = {};
@@ -45,7 +45,10 @@ class Option {
                     const arg = this._args[argIndex];
 
                     try {
-                        args[arg.name] = await arg.type.parse(input);
+                        const result = await arg.parse(sepperator, input, custom);
+
+                        input = result.input;
+                        args[arg.name] = result.args;
                     } catch (error) {
                         return reject(error);
                     }
@@ -58,10 +61,12 @@ class Option {
 
                     if (methods.excess(sepperator, input)) {
                         return reject(new Fault("EXCESS", "excess input remained", { input: input }));
+                    } else {
+                        input = input.slice(sepperator.length, input.length);
                     }
                 }
 
-                if (argIndex < this._args.length - 1) {
+                if (argIndex < this._args.length) {
                     const arg = this._args[argIndex];
 
                     if (!arg.optional) {
@@ -72,9 +77,14 @@ class Option {
 
             if (methods.excess(sepperator, input)) {
                 return reject(new Fault("EXCESS", "excess input remained", { input: input }));
+            } else {
+                input = input.slice(sepperator.length, input.length);
             }
 
-            resolve(args);
+            resolve({
+                input: input,
+                args: args
+            });
         });
     }
 

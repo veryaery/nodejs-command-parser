@@ -24,27 +24,28 @@ function merge(input) {
 }
 
 function scan(input, merged, caseSensitive) {
+    const available = Object.assign({}, merged);
     let cur = "";
     let output = null;
 
-    for (const char of input.split("")) {
+    for (const char of input.split("").concat([ "" ])) {
         cur += caseSensitive ? char : char.toLowerCase();
 
-        for (const key in merged) {
-            const value = merged[key];
-            const name = caseSensitive ? name : name.toLowerCase();
+        for (const key in available) {
+            const value = available[key];
+            const name = caseSensitive ? key : key.toLowerCase();
 
             if (name.toLowerCase() == cur.toLowerCase()) {
                 output = {
                     key: key,
                     value: value
                 };
-            } else if (!name.toLowerCase().startsWith(cur.toLowerCase())) {
-                delete merged[key];
+            } else if (!name.startsWith(cur)) {
+                delete available[key];
             }
         }
 
-        if (Object.keys(merged).length == 0) {
+        if (Object.keys(available).length == 0) {
             break;
         }
     }

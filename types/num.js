@@ -13,7 +13,7 @@ const defaults = {
 function symbolFor(char, base) {
     for (const symbols of base) {
         for (const symbol of symbols) {
-            if (symbol == base) {
+            if (char == symbol) {
                 return base.indexOf(symbols);
             }
         }
@@ -30,7 +30,7 @@ function extractNumber(input, options) {
             !options.negatives.includes(char) &&
             !options.decimalSepperators.includes(char) &&
             !options.ignores.includes(char) &&
-            !symbolFor(char)
+            symbolFor(char, options.base) === null
         ) {
             break;
         } else {
@@ -44,10 +44,12 @@ function extractNumber(input, options) {
 function parseSymbolvalues(input, symbols, options, decimal) {
     let output = input;
 
-    for (let pos = symbols.length; pos > 0; pos--) {
+    symbols = decimal ? symbols : symbols.reverse();
+
+    for (let pos = 0; pos < symbols.length; pos++) {
         const symbol = symbols[pos];
 
-        output += symbolFor(symbol) * (options.base.length ** (decimal ? -pos : pos));
+        output += symbolFor(symbol, options.base) * (options.base.length ** (decimal ? -(pos + 1) : pos));
     }
 
     return output;
@@ -75,27 +77,32 @@ function parseNumber(numberString, options) {
             symbols.push(char);
         }
     }
-    
-    output = parseSymbolvalues(output decimalSymbols, options, decimal);
-    output = parseSymbolvalues(output, symbols, options, decimal);
 
-    return options.negatives.includes(numberString.charat(0)) ? -output : output;
+    output = parseSymbolvalues(output, decimalSymbols, options, true);
+    output = parseSymbolvalues(output, symbols, options, false);
+
+    return options.negatives.includes(numberString[0]) ? -output : output;
 }
 
 function num(options) {
     // defaults
-    for (const key in defaults) {
-        if (!options[key]) {
-            options[key] = defaults[key];
+    if (options) {
+        for (const key in defaults) {
+            if (!options[key]) {
+                options[key] = defaults[key];
+            }
         }
+    } else {
+        options = defaults;
     }
+
 
     return function (sepperator, input, custom) {
         const numberString = extractNumber(input, options);
 
         input = input.slice(numberString.length, input.length);
 
-        return parseNumber(numberString);
+        return [ input, parseNumber(numberString, options) ];
     };
 }
 
