@@ -65,44 +65,32 @@ class Num extends Type {
         let valid = false;
         
         while (input.length > 0) {
-            let result = methods.arrayScan(input, matches, this._options.caseSensitive);
-
+            const result = methods.arrayScan(input, [
+                ...matches,
+                ...this._options.decimalSeparators,
+                ...this._options.negatives,
+                ...this._options.ignores
+            ], this._options.caseSensitive);
+            
             if (result) {
-                if (decimal) {
-                    decimalSymbols.push(result);
-                } else {
-                    symbols.push(result);
+                if (matches.includes(result)) {
+                    if (decimal) {
+                        decimalSymbols.push(result);
+                    } else {
+                        symbols.push(result);
+                    }
+
+                    valid = true;
+                } else if (this._options.decimalSeparators.includes(result)) {
+                    decimal = true;
+                } else if (this._options.negatives.includes(result)) {
+                    negatives = true;
                 }
 
-                valid = true;
                 input = input.slice(result.length, input.length);
-                continue;
-            } 
-            
-            result = methods.arrayScan(input, this._options.decimalSeparators, this._options.caseSensitive);
-            
-            if (result) {
-                decimal = true;
-                input = input.slice(result.length, input.length);
-                continue;
+            } else {
+                break;
             }
-
-            result = methods.arrayScan(input, this._options.negatives, this._options.caseSensitive);
-
-            if (result) {
-                negatives = true;
-                input = input.slice(result.length, input.length);
-                continue;
-            }
-
-            result = methods.arrayScan(input, this._options.ignores, this._options.caseSensitive);
-
-            if (result) {
-                input = input.slice(result.length, input.length);
-                continue;
-            }
-
-            break;
         }
 
         return {

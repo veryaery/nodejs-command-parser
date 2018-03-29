@@ -1,6 +1,7 @@
 // imports
 const Type = require("../classes/Type.js");
 const Fault = require("../classes/Fault.js");
+const methods = require("../methods.js");
 
 class Str extends Type {
 
@@ -23,26 +24,15 @@ class Str extends Type {
         let output = "";
         let quote = false;
 
-        for (const stringSeparator of stringSeparators) {
-            if (input.startsWith(stringSeparator)) {
-                quote = true;
-            }
+        let result = methods.scanArray(input, this._options.stringSeparators);
+
+        if (result) {
+            quote = true;
+            input = input.slice(result.length, input.length);
         }
 
-        while (true) {
-            for (const stringSeparator of stringSeparators) {
-                if (input.startsWith(stringSeparator)) {
-                    output += input[0];
-                    break;
-                }
-            }
-        }
-        for (const char of input.split("")) {
-            if (!this._options.stringSeparators.includes(char)) {
-                quote = false;
-            }
-
-            if (!quote && separators.includes(char))
+        while (input.length > 0) {
+            
         }
 
         return [ input, output ];
