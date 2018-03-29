@@ -49,10 +49,7 @@ class Num extends Type {
                 valid = true;
             } else if (this._options.decimalSepperators.includes(char)) {
                 decimal = true;
-            } else if (
-                !this._options.negatives.includes(char) &&
-                !this._options.ignores.includes(char) 
-            ) {
+            } else if (!this._options.negatives.includes(char) && !this._options.ignores.includes(char)) {
                 break;
             }
 
@@ -60,9 +57,10 @@ class Num extends Type {
         }
 
         return {
-            valid: valid,
             symbols: symbols,
             decimalSymbols: decimalSymbols,
+            valid: valid,
+            decimal: decimal,
             output: output
         };
     }
@@ -85,13 +83,28 @@ class Num extends Type {
         const result = this._parse(input);
         
         if (!result.valid) {
-            throw new Fault("NAN", `input was not a number`, { input: input });
+            throw new Fault("NOT_A_NUMBER", "input was not a number", { input: input });
         }
         
         let output = 0;
 
         output += this._parseSymbols(result.symbols, false);
         output += this._parseSymbols(result.decimalSymbols, true);
+
+        if (this._options.integer && result.decimal) {
+            throw new Fault("NOT_AN_INTEGER", `number is not an integer`, { number: output });
+        } else if (this._options.min && output < this._options.min) {
+            throw new Fault("TOO_SMALL", `number must be atleast ${this._options.min}`, {
+                min: this._options.min,
+                number: output
+            });
+        } else if (this._options.max && output > this._options.max) {
+            throw new Fault("TOO_LARGE", `number must at max be ${this._options.max}`, {
+                max: this._options.max,
+                number: output
+            });
+        }
+
         input = input.slice(result.output.length, input.length);
 
         return [ input, output ];

@@ -1,14 +1,3 @@
-function excess(sepperator, input) {
-    if (
-        input.length > 0 &&
-        (input.length == sepperator.length || !input.startsWith(sepperator))
-    ) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 function trimSepperators(sepperators, input) {
     let output = input;
     let trimmed = true;
@@ -72,7 +61,6 @@ function scan(input, merged, caseSensitive) {
 }
 
 // exports
-exports.excess = excess;
 exports.trimSepperators = trimSepperators;
 exports.merge = merge;
 exports.scan = scan;
