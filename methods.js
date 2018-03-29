@@ -31,7 +31,7 @@ function merge(input) {
 }
 
 function arrayScan(input, matches, caseSensitive) {
-    const possible = matches.slice(0); // copy array
+    const possible = [ ...matches ] // copy array
     let cur = "";
     let output = null;
 
@@ -54,7 +54,7 @@ function arrayScan(input, matches, caseSensitive) {
 }
 
 function objectScan(input, matches, caseSensitive) {
-    const possible = Object.assign({}, matches); // copy object
+    const possible = { ...matches } // copy object
     let cur = "";
     let output = null;
 

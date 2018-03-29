@@ -44,18 +44,6 @@ class Num extends Type {
         return output;
     }
 
-    _valueFor(symbol) {
-        for (const value of this._options.base) {
-            for (const valueSymbol of value) {
-                if (symbol == valueSymbol) {
-                    return this._options.base.indexOf(value);
-                }
-            }
-        }
-    
-        return null;
-    }
-
     _parse(input) {
         const matches = this._baseArray();
         const symbols = [];
@@ -73,6 +61,8 @@ class Num extends Type {
             ], this._options.caseSensitive);
             
             if (result) {
+                input = input.slice(result.length, input.length);
+
                 if (matches.includes(result)) {
                     if (decimal) {
                         decimalSymbols.push(result);
@@ -86,8 +76,6 @@ class Num extends Type {
                 } else if (this._options.negatives.includes(result)) {
                     negatives = true;
                 }
-
-                input = input.slice(result.length, input.length);
             } else {
                 break;
             }

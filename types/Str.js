@@ -8,23 +8,23 @@ class Str extends Type {
     constructor(options) {
         // defaults
         if (options) {
-            for (const key in Num.defaults) {
+            for (const key in Str.defaults) {
                 if (!options[key]) {
-                    options[key] = Num.defaults[key];
+                    options[key] = Str.defaults[key];
                 }
             }
         } else {
-            options = Num.defaults;
+            options = Str.defaults;
         }
 
         super(options);
     }
 
-    parse(separators, input, custom) {
+    _parse(separators, input) {
         let output = "";
         let quote = false;
 
-        let result = methods.scanArray(input, this._options.stringSeparators);
+        const result = methods.arrayScan(input, this._options.stringSeparators);
 
         if (result) {
             quote = true;
@@ -32,8 +32,52 @@ class Str extends Type {
         }
 
         while (input.length > 0) {
-            
+            const result = methods.arrayScan(input, [
+                ...this._options.stringSeparators,
+                ...separators
+            ], this._options.caseSensitive);
+
+            if (result) {
+                input = input.slice(result.length, input.length);
+
+                    if (this._options.stringSeparators.includes(result) && quote) {
+                        break;
+                    } else if (separators.includes(result)) {
+                        if (quote) {
+                            output += result;
+                        } else {
+                            break;
+                        }
+                    }
+            } else {
+                output += input[0];
+                input = input.slice(1, input.length);
+            }
         }
+
+        return {
+            output,
+            input
+        };
+    }
+
+    parse(separators, input, custom) {
+        const result = this._parse(separators, input);
+        const output = result.output;
+
+        if (this._options.min && output.length < this._options.min) {
+            throw new Fault("TOO_SMALL", `string must be atleast ${this._options.min}  characters long`, {
+                min: this._options.min,
+                string: output
+            });
+        } else if (this._options.max && output.length > this._options.max) {
+            throw new Fault("TOO_LARGE", `string must at max be ${this._options.max} characters long`, {
+                max: this._options.max,
+                string: output
+            });
+        }
+
+        input = result.input;
 
         return [ input, output ];
     }
