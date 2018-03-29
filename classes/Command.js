@@ -52,10 +52,12 @@ class Command extends Option {
             do {
                 if (merged) {
                     const option = methods.scan(input, merged);
+
                     if (option) {
                         try {
                             input = input.slice(option.key.length, input.length);
-
+                            
+                            console.log(merged, input, methods.excess(sepperator, input))
                             if (methods.excess(sepperator, input)) {
                                 return reject(new Fault("EXCESS", "excess input remained", { input: input }));
                             } else {

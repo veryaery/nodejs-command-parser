@@ -53,10 +53,9 @@ class Option {
                         return reject(error);
                     }
 
+                    argIndex++;
                     if (argIndex == this._args.length) {
                         break;
-                    } else {
-                        argIndex++;
                     }
 
                     if (methods.excess(sepperator, input)) {
@@ -73,12 +72,12 @@ class Option {
                         return reject(new Fault("REQUIRED", `argument ${arg.name} is required`, { arg: arg }));
                     }
                 }
-            }
 
-            if (methods.excess(sepperator, input)) {
-                return reject(new Fault("EXCESS", "excess input remained", { input: input }));
-            } else {
-                input = input.slice(sepperator.length, input.length);
+                if (methods.excess(sepperator, input)) {
+                    return reject(new Fault("EXCESS", "excess input remained", { input: input }));
+                } else {
+                    input = input.slice(sepperator.length, input.length);
+                }
             }
 
             resolve({
