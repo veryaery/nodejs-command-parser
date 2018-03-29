@@ -1,6 +1,7 @@
 // imports
 const Type = require("../classes/Type.js");
 const Fault = require("../classes/Fault.js");
+const methods = require("../methods.js");
 
 class Num extends Type {
 
@@ -19,6 +20,30 @@ class Num extends Type {
         super(options);
     }
 
+    _baseArray() {
+        let output = [];
+
+        for (const value of this._options.base) {
+            for (const valueSymbol of value) {
+                output.push(valueSymbol);
+            }
+        }
+
+        return output;
+    }
+
+    _baseObject() {
+        let output = {};
+
+        for (const value of this._options.base) {
+            for (const valueSymbol of value) {
+                output[valueSymbol] = this._options.base.indexOf(value);
+            }
+        }
+
+        return output;
+    }
+
     _valueFor(symbol) {
         for (const value of this._options.base) {
             for (const valueSymbol of value) {
@@ -32,40 +57,65 @@ class Num extends Type {
     }
 
     _parse(input) {
+        const matches = this._baseArray();
         const symbols = [];
         const decimalSymbols = [];
-        let output = "";
+        let negative = false;
         let decimal = false;
         let valid = false;
+        
+        while (input.length > 0) {
+            let result = methods.arrayScan(input, matches, this._options.caseSensitive);
 
-        for (const char of input.split("")) {
-            if (this._valueFor(char) !== null) {
+            if (result) {
                 if (decimal) {
-                    decimalSymbols.push(char);
+                    decimalSymbols.push(result);
                 } else {
-                    symbols.push(char);
+                    symbols.push(result);
                 }
 
                 valid = true;
-            } else if (this._options.decimalSeparators.includes(char)) {
+                input = input.slice(result.length, input.length);
+                continue;
+            } 
+            
+            result = methods.arrayScan(input, this._options.decimalSeparators, this._options.caseSensitive);
+            
+            if (result) {
                 decimal = true;
-            } else if (!this._options.negatives.includes(char) && !this._options.ignores.includes(char)) {
-                break;
+                input = input.slice(result.length, input.length);
+                continue;
             }
 
-            output += char;
+            result = methods.arrayScan(input, this._options.negatives, this._options.caseSensitive);
+
+            if (result) {
+                negatives = true;
+                input = input.slice(result.length, input.length);
+                continue;
+            }
+
+            result = methods.arrayScan(input, this._options.ignores, this._options.caseSensitive);
+
+            if (result) {
+                input = input.slice(result.length, input.length);
+                continue;
+            }
+
+            break;
         }
 
         return {
-            symbols: symbols,
-            decimalSymbols: decimalSymbols,
-            valid: valid,
-            decimal: decimal,
-            output: output
+            symbols,
+            decimalSymbols,
+            negative,
+            decimal,
+            input,
+            valid
         };
     }
 
-    _parseSymbols(symbols, decimal) {
+    _parseSymbols(symbols, baseObject, decimal) {
         let output = 0;
     
         symbols = decimal ? symbols : symbols.reverse();
@@ -73,7 +123,7 @@ class Num extends Type {
         for (let pos = 0; pos < symbols.length; pos++) {
             const symbol = symbols[pos];
     
-            output += this._valueFor(symbol, this._options.base) * (this._options.base.length ** (decimal ? -(pos + 1) : pos));
+            output += baseObject[symbol] * (this._options.base.length ** (decimal ? -(pos + 1) : pos));
         }
     
         return output;
@@ -86,10 +136,11 @@ class Num extends Type {
             throw new Fault("NOT_A_NUMBER", "input was not a number", { input: input });
         }
         
+        const baseObject = this._baseObject();
         let output = 0;
 
-        output += this._parseSymbols(result.symbols, false);
-        output += this._parseSymbols(result.decimalSymbols, true);
+        output += this._parseSymbols(result.symbols, baseObject, false);
+        output += this._parseSymbols(result.decimalSymbols, baseObject, true);
 
         if (this._options.integer && result.decimal) {
             throw new Fault("NOT_AN_INTEGER", `number must be an integer`, { number: output });
@@ -105,7 +156,7 @@ class Num extends Type {
             });
         }
 
-        input = input.slice(result.output.length, input.length);
+        input = result.input;
 
         return [ input, output ];
     }
