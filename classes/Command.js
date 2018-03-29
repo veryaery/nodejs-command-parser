@@ -22,7 +22,7 @@ class Command extends Option {
     async parse(separators, input, custom) {
         return new Promise(async (resolve, reject) => {
             if (this._commands && Object.keys(this._commands).length > 0) {
-                const command = methods.scan(input, methods.merge(this._commands));
+                const command = methods.objectScan(input, methods.merge(this._commands));
 
                 if (command) {
                     input = methods.trimSepperators(separators, input.slice(command.key.length, input.length));
@@ -45,7 +45,7 @@ class Command extends Option {
 
             do {
                 if (merged) {
-                    const option = methods.scan(input, merged);
+                    const option = methods.objectScan(input, merged);
 
                     if (option) {
                         try {

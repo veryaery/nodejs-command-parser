@@ -37,7 +37,7 @@ class Option {
 
                 while (input.length > 0) {
                     if (merged) {
-                        if (methods.scan(input, merged)) {
+                        if (methods.objectScan(input, merged)) {
                             break;
                         }
                     }

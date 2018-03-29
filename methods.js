@@ -30,29 +30,53 @@ function merge(input) {
     return output;
 }
 
-function scan(input, merged, caseSensitive) {
-    const available = Object.assign({}, merged);
+function arrayScan(input, matches, caseSensitive) {
+    const possible = matches.slice(0); // copy array
     let cur = "";
     let output = null;
 
-    for (const char of input.split("").concat([ "" ])) {
+    for (const char of input.split("")) {
         cur += caseSensitive ? char : char.toLowerCase();
 
-        for (const key in available) {
-            const value = available[key];
+        for (const item of possible) {
+            if (caseSensitive ? item : item.toLowerCase() == cur) {
+                output = item;
+            }
+        }
+
+        // no more possible matches
+        if (possible.length == 0) {
+            break;
+        }
+    }
+
+    return output;
+}
+
+function objectScan(input, matches, caseSensitive) {
+    const possible = Object.assign({}, matches); // copy object
+    let cur = "";
+    let output = null;
+
+    for (const char of input.split("")) {
+        cur += caseSensitive ? char : char.toLowerCase();
+
+        for (const key in possible) {
+            const value = possible[key];
             const name = caseSensitive ? key : key.toLowerCase();
 
-            if (name.toLowerCase() == cur.toLowerCase()) {
+            if (name == cur) {
                 output = {
                     key: key,
                     value: value
                 };
             } else if (!name.startsWith(cur)) {
-                delete available[key];
+                delete possible[key];
             }
         }
 
-        if (Object.keys(available).length == 0) {
+        // no more possible matches
+        if (Object.keys(possible).length == 0) {
             break;
         }
     }
@@ -63,4 +87,5 @@ function scan(input, merged, caseSensitive) {
 // exports
 exports.trimSepperators = trimSepperators;
 exports.merge = merge;
-exports.scan = scan;
+exports.arrayScan = arrayScan;
+exports.objectScan = objectScan;
