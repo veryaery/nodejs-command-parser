@@ -18,6 +18,11 @@ class Option {
     get args() { return this._args; }
     setArgs(args) { this._args = args; return this; }
 
+    set(key, value) {
+        this[key] = value;
+        return this;
+    }
+
     async parse(sepperator, input, parent, custom) {
         return new Promise(async (resolve, reject) => {
             let merged = null;

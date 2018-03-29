@@ -19,11 +19,6 @@ class Command extends Option {
     get options() { return this._options; }
     setOptions(options) { this._options = options; return this; }
 
-    set(key, value) {
-        this[key] = value;
-        return this;
-    }
-
     async parse(sepperator, input, custom) {
         return new Promise(async (resolve, reject) => {
             if (this._commands && Object.keys(this._commands).length > 0) {
