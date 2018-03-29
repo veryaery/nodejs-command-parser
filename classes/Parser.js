@@ -7,12 +7,12 @@ const Command = require("./Command.js");
 class Parser extends Command {
 
     // getters and set methods
-    get sepperator() { return this._sepperator; }
-    setSepperator(sepperator) { this._sepperator = sepperator; return this; }
+    get separators() { return this._separators; }
+    setSeparators(separators) { this._separators = separators; return this; }
 
     parse(input, custom) {
         return new Promise((resolve, reject) => {
-            super.parse(this._sepperator, input, custom)
+            super.parse(this._separators, input, custom)
                 .then(resolve)
                 .catch(reject);
         });

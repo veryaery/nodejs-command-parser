@@ -9,6 +9,24 @@ function excess(sepperator, input) {
     }
 }
 
+function trimSepperators(sepperators, input) {
+    let output = input;
+    let trimmed = true;
+
+    while (trimmed) {
+        trimmed = false;
+
+        for (const sepperator of sepperators) {
+            if (output.startsWith(sepperator)) {
+                output = output.slice(sepperator.length, output.length);
+                trimmed = true;
+            }
+        }
+    }
+
+    return output;
+}
+
 function merge(input) {
     let output = {};
 
@@ -55,5 +73,6 @@ function scan(input, merged, caseSensitive) {
 
 // exports
 exports.excess = excess;
+exports.trimSepperators = trimSepperators;
 exports.merge = merge;
 exports.scan = scan;

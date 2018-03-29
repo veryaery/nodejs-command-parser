@@ -19,21 +19,15 @@ class Command extends Option {
     get options() { return this._options; }
     setOptions(options) { this._options = options; return this; }
 
-    async parse(sepperator, input, custom) {
+    async parse(separators, input, custom) {
         return new Promise(async (resolve, reject) => {
             if (this._commands && Object.keys(this._commands).length > 0) {
                 const command = methods.scan(input, methods.merge(this._commands));
 
                 if (command) {
-                    input = input.slice(command.key.length, input.length);
+                    input = methods.trimSepperators(separators, input.slice(command.key.length, input.length));
 
-                    if (methods.excess(sepperator, input)) {
-                        return reject(new Fault("EXCESS", "excess input remained", { input: input }));
-                    } else {
-                        input = input.slice(sepperator.length, input.length);
-                    }
-
-                    return command.value.parse(sepperator, input, custom)
+                    return command.value.parse(separators, input, custom)
                         .then(resolve)
                         .catch(reject);
                 }
@@ -55,16 +49,9 @@ class Command extends Option {
 
                     if (option) {
                         try {
-                            input = input.slice(option.key.length, input.length);
-                            
-                            console.log(merged, input, methods.excess(sepperator, input))
-                            if (methods.excess(sepperator, input)) {
-                                return reject(new Fault("EXCESS", "excess input remained", { input: input }));
-                            } else {
-                                input = input.slice(sepperator.length, input.length);
-                            }
+                            input = methods.trimSepperators(separators, input.slice(option.key.length, input.length));
 
-                            const result = await option.value.parse(sepperator, input, this, custom);
+                            const result = await option.value.parse(separators, input, this, custom);
 
                             input = result.input;
                             output.options[option.value.name] = result.args;
@@ -77,7 +64,7 @@ class Command extends Option {
                 }
 
                 try {
-                    const result = await super.parse(sepperator, input, this, custom);
+                    const result = await super.parse(separators, input, this, custom);
 
                     input = result.input;
                     output.arguments = result.args;

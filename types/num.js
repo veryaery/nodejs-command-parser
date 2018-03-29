@@ -31,27 +31,44 @@ class Num extends Type {
         return null;
     }
 
-    _extractNumber(input) {
+    _parse(input) {
+        const symbols = [];
+        const decimalSymbols = [];
         let output = "";
+        let decimal = false;
+        let valid = false;
 
         for (const char of input.split("")) {
-            if (
+            if (this._valueFor(char) !== null) {
+                if (decimal) {
+                    decimalSymbols.push(char);
+                } else {
+                    symbols.push(char);
+                }
+
+                valid = true;
+            } else if (this._options.decimalSepperators.includes(char)) {
+                decimal = true;
+            } else if (
                 !this._options.negatives.includes(char) &&
-                !this._options.decimalSepperators.includes(char) &&
-                !this._options.ignores.includes(char) &&
-                this._valueFor(char) === null
+                !this._options.ignores.includes(char) 
             ) {
                 break;
-            } else {
-                output += char;
             }
+
+            output += char;
         }
 
-        return output;
+        return {
+            valid: valid,
+            symbols: symbols,
+            decimalSymbols: decimalSymbols,
+            output: output
+        };
     }
 
-    _parseSymbolvalues(input, symbols, decimal) {
-        let output = input;
+    _parseSymbols(symbols, decimal) {
+        let output = 0;
     
         symbols = decimal ? symbols : symbols.reverse();
     
@@ -64,45 +81,20 @@ class Num extends Type {
         return output;
     }
 
-    _parseNumber(numberString) {
-        const symbols = [];
-        const decimalSymbols = [];
+    parse(separators, input, custom) {
+        const result = this._parse(input);
+        
+        if (!result.valid) {
+            throw new Fault("NAN", `input was not a number`, { input: input });
+        }
+        
         let output = 0;
-        let decimal = false;
-    
-        for (const char of numberString.split("")) {
-            if (this._options.ignores.includes(char)) {
-                continue;
-            }
-    
-            if (this._options.decimalSepperators.includes(char)) {
-                decimal = true;
-                continue;
-            }
-    
-            if (decimal) {
-                decimalSymbols.push(char);
-            } else {
-                symbols.push(char);
-            }
-        }
-    
-        output = this._parseSymbolvalues(output, symbols, false);
-        output = this._parseSymbolvalues(output, decimalSymbols, true);
-    
-        return this._options.negatives.includes(numberString[0]) ? -output : output;
-    }
 
-    parse(sepperator, input, custom) {
-        const numberString = this._extractNumber(input);
+        output += this._parseSymbols(result.symbols, false);
+        output += this._parseSymbols(result.decimalSymbols, true);
+        input = input.slice(result.output.length, input.length);
 
-        if (numberString.length == 0) {
-            throw new Fault("NAN", "not a number", { input: input });
-        }
-
-        input = input.slice(numberString.length, input.length);
-
-        return [ input, this._parseNumber(numberString) ];
+        return [ input, output ];
     }
 
 }

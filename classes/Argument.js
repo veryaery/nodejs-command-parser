@@ -22,10 +22,10 @@ class Argument {
         return this;
     }
 
-    parse(sepperator, input, custom) {
+    parse(separators, input, custom) {
         return new Promise((resolve, reject) => {
             try {
-                const result = this._type.parse(sepperator, input, custom);
+                const result = this._type.parse(separators, input, custom);
 
                 if (result instanceof Promise) {
                     result

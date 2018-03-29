@@ -23,7 +23,7 @@ class Option {
         return this;
     }
 
-    async parse(sepperator, input, parent, custom) {
+    async parse(separators, input, parent, custom) {
         return new Promise(async (resolve, reject) => {
             let merged = null;
             let args = {};
@@ -45,7 +45,7 @@ class Option {
                     const arg = this._args[argIndex];
 
                     try {
-                        const result = await arg.parse(sepperator, input, custom);
+                        const result = await arg.parse(separators, input, custom);
 
                         input = result.input;
                         args[arg.name] = result.args;
@@ -58,11 +58,7 @@ class Option {
                         break;
                     }
 
-                    if (methods.excess(sepperator, input)) {
-                        return reject(new Fault("EXCESS", "excess input remained", { input: input }));
-                    } else {
-                        input = input.slice(sepperator.length, input.length);
-                    }
+                    input = methods.trimSepperators(separators, input);
                 }
 
                 if (argIndex < this._args.length) {
@@ -72,13 +68,9 @@ class Option {
                         return reject(new Fault("REQUIRED", `argument ${arg.name} is required`, { arg: arg }));
                     }
                 }
-
-                if (methods.excess(sepperator, input)) {
-                    return reject(new Fault("EXCESS", "excess input remained", { input: input }));
-                } else {
-                    input = input.slice(sepperator.length, input.length);
-                }
             }
+            
+            input = methods.trimSepperators(separators, input);
 
             resolve({
                 input: input,
