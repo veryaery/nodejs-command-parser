@@ -13,7 +13,7 @@ class Type {
         return this;
     }
 
-    parse(sepperator, input, custom) {
+    parse(separators, input, custom) {
         return [ input, null ];
     }
 
