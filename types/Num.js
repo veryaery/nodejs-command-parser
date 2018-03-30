@@ -43,6 +43,20 @@ class Num extends Type {
 
         return output;
     }
+    
+    _parseSymbols(symbols, baseObject, decimal) {
+        let output = 0;
+    
+        symbols = decimal ? symbols : symbols.reverse();
+    
+        for (let pos = 0; pos < symbols.length; pos++) {
+            const symbol = symbols[pos];
+    
+            output += baseObject[symbol] * (this._options.base.length ** (decimal ? -(pos + 1) : pos));
+        }
+    
+        return output;
+    }
 
     _parse(separators, input) {
         const matches = this._baseArray();
@@ -94,20 +108,6 @@ class Num extends Type {
             input,
             valid
         };
-    }
-
-    _parseSymbols(symbols, baseObject, decimal) {
-        let output = 0;
-    
-        symbols = decimal ? symbols : symbols.reverse();
-    
-        for (let pos = 0; pos < symbols.length; pos++) {
-            const symbol = symbols[pos];
-    
-            output += baseObject[symbol] * (this._options.base.length ** (decimal ? -(pos + 1) : pos));
-        }
-    
-        return output;
     }
 
     parse(separators, input, custom) {
