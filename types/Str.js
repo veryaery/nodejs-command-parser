@@ -67,13 +67,13 @@ class Str extends Type {
 
         if (this._options.min && output.length < this._options.min) {
             throw new Fault("TOO_SMALL", `string must be atleast ${this._options.min}  characters long`, {
-                min: this._options.min,
-                string: output
+                string: output,
+                min: this._options.min
             });
         } else if (this._options.max && output.length > this._options.max) {
             throw new Fault("TOO_LARGE", `string must at max be ${this._options.max} characters long`, {
-                max: this._options.max,
-                string: output
+                string: output,
+                max: this._options.max
             });
         }
 

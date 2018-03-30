@@ -127,13 +127,13 @@ class Num extends Type {
             throw new Fault("NOT_AN_INTEGER", `number must be an integer`, { number: output });
         } else if (this._options.min && output < this._options.min) {
             throw new Fault("TOO_SMALL", `number must be atleast ${this._options.min}`, {
-                min: this._options.min,
-                number: output
+                number: output,
+                min: this._options.min
             });
         } else if (this._options.max && output > this._options.max) {
             throw new Fault("TOO_LARGE", `number must at max be ${this._options.max}`, {
-                max: this._options.max,
-                number: output
+                number: output,
+                max: this._options.max
             });
         }
 
