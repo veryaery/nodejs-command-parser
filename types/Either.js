@@ -21,26 +21,26 @@ class Either extends Type {
 
     async parse(separators, input, custom) {
         return new Promise(async (resolve, reject) => {
-            let buffer = "";
+            const stringTypes = [];
+            const types = [];
 
-            for (const char of input.split("")) {
-                const remaining = input.slice(buffer.length, input.length);
-                const result = methods.arrayScan(remaining, separators);
-
-                if (result) {
-                    break;
+            for (const type of this._types) {
+                if (typeof type == String) {
+                    stringTypes.push(type);
                 } else {
-                    buffer += char;
+                    types.push(type);
                 }
             }
 
-            for (const type of this._types) {
-                if (buffer == type) {
-                    return resolve([ input.slice(buffer.length, input.length), type ]);
-                } else {
+            const result = methods.arrayScan(input, stringTypes);
+
+            if (result) {
+                return resolve([ input.slice(result.length, input.length), result ]);
+            } else {
+                for (const type of types) {
                     try {
                         const result = await new Argument().setType(type).parse(separators, input);
-
+    
                         return resolve([ result.input, result.args ]);
                     } catch (error) {}
                 }
