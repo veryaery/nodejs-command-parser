@@ -27,7 +27,7 @@ class Argument {
             try {
                 const result = this._type.parse(separators, input, custom);
 
-                if (result.then && result.catch) {
+                if (result instanceof Promise) {
                     result
                         .then(result => {
                             resolve({

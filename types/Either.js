@@ -16,7 +16,7 @@ class Either extends Type {
     }
 
     _typeString() {
-        return this._types.map(type => typeof type == String ? type : type.toString()).join(", ");
+        return this._types.map(type => typeof type == "string" ? `"${type}"` : type.toString()).join(", ");
     }
 
     async parse(separators, input, custom) {
@@ -25,7 +25,7 @@ class Either extends Type {
             const types = [];
 
             for (const type of this._types) {
-                if (typeof type == String) {
+                if (typeof type == "string") {
                     stringTypes.push(type);
                 } else {
                     types.push(type);

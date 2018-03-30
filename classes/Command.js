@@ -34,7 +34,8 @@ class Command extends Option {
             }
 
             let merged = null;
-            let output = Object.assign({}, this);
+            let output = { ...this };
+            let parsed = false;
 
             if (this._options && Object.keys(this._options).length > 0) {
                 merged = methods.merge(this._options);
@@ -63,13 +64,18 @@ class Command extends Option {
                     }
                 }
 
-                try {
-                    const result = await super.parse(separators, input, this, custom);
-
-                    input = result.input;
-                    output.arguments = result.args;
-                } catch (error) {
-                    return reject(error);
+                if (parsed) {
+                    break;
+                } else {      
+                    try {
+                        const result = await super.parse(separators, input, this, custom);
+    
+                        parsed = true;
+                        input = result.input;
+                        output.arguments = result.args;
+                    } catch (error) {
+                        return reject(error);
+                    }
                 }
             } while (input.length > 0)
 
