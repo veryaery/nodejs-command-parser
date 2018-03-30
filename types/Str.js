@@ -38,17 +38,17 @@ class Str extends Type {
             ], this._options.caseSensitive);
 
             if (result) {
-                input = input.slice(result.length, input.length);
+                if (quote) {
+                    input = input.slice(result.length, input.length);
 
-                    if (this._options.stringSeparators.includes(result) && quote) {
+                    if (this._options.stringSeparators.includes(result)) {
                         break;
                     } else if (separators.includes(result)) {
-                        if (quote) {
-                            output += result;
-                        } else {
-                            break;
-                        }
+                        output += result;
                     }
+                } else if (separators.includes(result)) {
+                    break;
+                }
             } else {
                 output += input[0];
                 input = input.slice(1, input.length);

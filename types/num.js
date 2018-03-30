@@ -44,7 +44,7 @@ class Num extends Type {
         return output;
     }
 
-    _parse(input) {
+    _parse(separators, input) {
         const matches = this._baseArray();
         const symbols = [];
         const decimalSymbols = [];
@@ -57,24 +57,29 @@ class Num extends Type {
                 ...matches,
                 ...this._options.decimalSeparators,
                 ...this._options.negatives,
-                ...this._options.ignores
+                ...this._options.ignores,
+                ...separators
             ], this._options.caseSensitive);
             
             if (result) {
-                input = input.slice(result.length, input.length);
+                if (separators.includes(result)) {
+                    break;
+                } else {
+                    input = input.slice(result.length, input.length);
 
-                if (matches.includes(result)) {
-                    if (decimal) {
-                        decimalSymbols.push(result);
-                    } else {
-                        symbols.push(result);
+                    if (matches.includes(result)) {
+                        if (decimal) {
+                            decimalSymbols.push(result);
+                        } else {
+                            symbols.push(result);
+                        }
+
+                        valid = true;
+                    } else if (this._options.decimalSeparators.includes(result)) {
+                        decimal = true;
+                    } else if (this._options.negatives.includes(result)) {
+                        negatives = true;
                     }
-
-                    valid = true;
-                } else if (this._options.decimalSeparators.includes(result)) {
-                    decimal = true;
-                } else if (this._options.negatives.includes(result)) {
-                    negatives = true;
                 }
             } else {
                 break;
@@ -106,7 +111,7 @@ class Num extends Type {
     }
 
     parse(separators, input, custom) {
-        const result = this._parse(input);
+        const result = this._parse(separators, input);
         
         if (!result.valid) {
             throw new Fault("NOT_A_NUMBER", "input was not a number", { input: input });
