@@ -21,42 +21,52 @@ class Command extends Option {
 
     async parse(separators, input, custom) {
         return new Promise(async (resolve, reject) => {
+            // if we have commands, check if the input starts with the name of one
             if (this._commands && Object.keys(this._commands).length > 0) {
                 const command = methods.objectScan(input, methods.merge(this._commands));
 
                 if (command) {
+                    // input starts with the name of a command. trim the name and following separators
                     input = methods.trimSepperators(separators, input.slice(command.key.length, input.length));
 
+                    // forward the result of that command instead
                     return command.value.parse(separators, input, custom)
                         .then(resolve)
                         .catch(reject);
                 }
             }
 
-            let merged = null;
+            // the output object, which is a copy of this object, where the arguments and options are replaced with their parse results
             let output = { ...this };
+            output.arguments = {};
+            output.options = {};
+            
+            let merged = null;
             let parsed = false;
-
+            
+            // if we have options, merge them
             if (this._options && Object.keys(this._options).length > 0) {
                 merged = methods.merge(this._options);
             }
 
-            output.arguments = {};
-            output.options = {};
-
+            // while there is still input to be parsed
             do {
+                // if we have options, check if the input starts with the name of one
                 if (merged) {
                     const option = methods.objectScan(input, merged);
 
                     if (option) {
-                        try {
-                            input = methods.trimSepperators(separators, input.slice(option.key.length, input.length));
+                        // input starts with the name of an option. trim the name and following separators
+                        input = methods.trimSepperators(separators, input.slice(option.key.length, input.length));
 
-                            const result = await option.value.parse(separators, input, this, custom);
+                        // parse the option's arguments
+                        try {
+                            const result = await option.value.parse(separators, input, merged, custom);
 
                             input = result.input;
                             output.options[option.value.name] = result.args;
 
+                            // we parsed the option's arguments. skip our own arguments and check if the input starts with another
                             continue;
                         } catch (error) {
                             return reject(error);
@@ -65,10 +75,12 @@ class Command extends Option {
                 }
 
                 if (parsed) {
+                    // we have already parsed our own arguments. ignore the rest of the input
                     break;
-                } else {      
+                } else {
+                    // input didn't start with the name of an option. parse our own arguments
                     try {
-                        const result = await super.parse(separators, input, this, custom);
+                        const result = await super.parse(separators, input, merged, custom);
     
                         parsed = true;
                         input = result.input;

@@ -25,6 +25,7 @@ class Num extends Type {
 
         for (const value of this._options.base) {
             for (const valueSymbol of value) {
+                // push every symbol into an array
                 output.push(valueSymbol);
             }
         }
@@ -37,6 +38,7 @@ class Num extends Type {
 
         for (const value of this._options.base) {
             for (const valueSymbol of value) {
+                // match each symbol with it's value
                 output[valueSymbol] = this._options.base.indexOf(value);
             }
         }
@@ -51,7 +53,8 @@ class Num extends Type {
     
         for (let pos = 0; pos < symbols.length; pos++) {
             const symbol = symbols[pos];
-    
+            
+            // add up the value for each symbol
             output += baseObject[symbol] * (this._options.base.length ** (decimal ? -(pos + 1) : pos));
         }
     
@@ -65,37 +68,42 @@ class Num extends Type {
         let negative = false;
         let decimal = false;
         let valid = false;
+
+        const result = methods.arrayScan(input, this._options.negatives, this._options.caseSensitive);
+
+        if (result) {
+            // input starts with negative
+            input = input.slice(result.length, input.length);
+            negative = true;
+        }
         
+        // while there is still input to be parsed
         while (input.length > 0) {
             const result = methods.arrayScan(input, [
                 ...matches,
                 ...this._options.decimalSeparators,
-                ...this._options.negatives,
-                ...this._options.ignores,
-                ...separators
+                ...this._options.ignores
             ], this._options.caseSensitive);
             
             if (result) {
-                if (separators.includes(result)) {
-                    break;
-                } else {
-                    input = input.slice(result.length, input.length);
+                // input starts with something number related
+                input = input.slice(result.length, input.length);
 
-                    if (matches.includes(result)) {
-                        if (decimal) {
-                            decimalSymbols.push(result);
-                        } else {
-                            symbols.push(result);
-                        }
-
-                        valid = true;
-                    } else if (this._options.decimalSeparators.includes(result)) {
-                        decimal = true;
-                    } else if (this._options.negatives.includes(result)) {
-                        negatives = true;
+                if (matches.includes(result)) {
+                    if (decimal) {
+                        decimalSymbols.push(result);
+                    } else {
+                        symbols.push(result);
                     }
+
+                    // number contains atleast one symbol
+                    valid = true;
+                } else if (this._options.decimalSeparators.includes(result)) {
+                    // the following symbols will be decimal
+                    decimal = true;
                 }
             } else {
+                // input doesn't start with something number related. break
                 break;
             }
         }
@@ -114,12 +122,14 @@ class Num extends Type {
         const result = this._parse(separators, input);
         
         if (!result.valid) {
+            // input isn't valid
             throw new Fault("NOT_A_NUMBER", "input was not a number", { input: input });
         }
         
         const baseObject = this._baseObject();
         let output = 0;
 
+        // add up the values for all symbols
         output += this._parseSymbols(result.symbols, baseObject, false);
         output += this._parseSymbols(result.decimalSymbols, baseObject, true);
 

@@ -1,12 +1,14 @@
 function trimSepperators(sepperators, input) {
     let output = input;
-    let trimmed = true;
+    let trimmed = true; // if have we trimmed
 
+    // until we haven't trimmed
     while (trimmed) {
         trimmed = false;
 
         for (const sepperator of sepperators) {
             if (output.startsWith(sepperator)) {
+                // trim
                 output = output.slice(sepperator.length, output.length);
                 trimmed = true;
             }
@@ -23,6 +25,7 @@ function merge(input) {
         const values = input[key];
 
         for (const value of values) {
+            // merge all value's names with key
             output[key + value.name] = value;
         }
     }
@@ -31,7 +34,7 @@ function merge(input) {
 }
 
 function arrayScan(input, matches, caseSensitive) {
-    const possible = [ ...matches ] // copy array
+    const possible = [ ...matches ];
     let cur = "";
     let output = null;
 
@@ -39,8 +42,13 @@ function arrayScan(input, matches, caseSensitive) {
         cur += caseSensitive ? char : char.toLowerCase();
 
         for (const item of possible) {
-            if (caseSensitive ? item : item.toLowerCase() == cur) {
+            const name = caseSensitive ? item : item.toLowerCase();
+
+            if (name == cur) {
                 output = item;
+            } else if (!name.startsWith(cur)) {
+                // no way it can match. remove it from possible matches
+                possible.splice(possible.indexOf(item), 1);
             }
         }
 
@@ -54,7 +62,7 @@ function arrayScan(input, matches, caseSensitive) {
 }
 
 function objectScan(input, matches, caseSensitive) {
-    const possible = { ...matches } // copy object
+    const possible = { ...matches };
     let cur = "";
     let output = null;
 
@@ -71,6 +79,7 @@ function objectScan(input, matches, caseSensitive) {
                     value: value
                 };
             } else if (!name.startsWith(cur)) {
+                // no way it can match. remove it from possible matches
                 delete possible[key];
             }
         }

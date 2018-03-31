@@ -23,27 +23,27 @@ class Option {
         return this;
     }
 
-    async parse(separators, input, parent, custom) {
+    async parse(separators, input, merged, custom) {
         return new Promise(async (resolve, reject) => {
-            let merged = null;
             let args = {};
 
-            if (parent.options && parent.options.length > 0) {
-                merged = methods.merge(parent.options);
-            }
-
+            // if we have arguments, parse them
             if (this._args && this._args.length > 0) {
                 let argIndex = 0;
 
+                // while there is still input to be parsed 
                 while (input.length > 0) {
+                    // if the parent has options, check if the input starts with the name of an option
                     if (merged) {
                         if (methods.objectScan(input, merged)) {
+                            // the input started with the name of an option. break and let the parent parse it
                             break;
                         }
                     }
 
                     const arg = this._args[argIndex];
 
+                    // parse argument
                     try {
                         const result = await arg.parse(separators, input, custom);
 
@@ -55,21 +55,26 @@ class Option {
 
                     argIndex++;
                     if (argIndex == this._args.length) {
+                        // we have no more arguments to parse. break and let the parent parse the rest
                         break;
                     }
 
+                    // trim the following separators
                     input = methods.trimSepperators(separators, input);
                 }
 
+                // check if we were able to parse all required arguments
                 if (argIndex < this._args.length) {
                     const arg = this._args[argIndex];
 
                     if (!arg.optional) {
+                        // we weren't able to parse all required arguments
                         return reject(new Fault("REQUIRED", `argument ${arg.name} is required`, { arg: arg }));
                     }
                 }
             }
             
+            // trim the following separators
             input = methods.trimSepperators(separators, input);
 
             resolve({

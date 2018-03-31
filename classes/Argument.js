@@ -28,6 +28,7 @@ class Argument {
                 const result = this._type.parse(separators, input, custom);
 
                 if (result instanceof Promise) {
+                    // it's async. wait for and forward the result
                     result
                         .then(result => {
                             resolve({
@@ -37,6 +38,7 @@ class Argument {
                         })
                         .catch(reject);
                 } else {
+                    // it's sync. forward the result
                     resolve({
                         input: result[0],
                         args: result[1]

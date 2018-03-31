@@ -32,6 +32,7 @@ class List extends Type {
             let buffer = "";
 
             try {
+                // parse the first item
                 const result = await new Argument().setType(this._type).parse([
                     ...this._options.listSeparators,
                     ...separators
@@ -40,6 +41,7 @@ class List extends Type {
                 input = result.input;
                 output.push(result.args);
 
+                // while there is still input to be parsed
                 while (input.length > 0) {
                     const result = methods.arrayScan(input.slice(buffer.length, input.length), [
                         ...this._options.listSeparators,
@@ -47,12 +49,14 @@ class List extends Type {
                     ], this._options.caseSensitive);
 
                     if (result) {
+                        // input starts with something list related. add it to the buffer
                         if (this._options.listSeparators.includes(result)) {
                             list = true;
                         }
 
                         buffer += result;
                     } else if (list) {
+                        // input doesn't start with something list related. trim buffer and parse item
                         input = input.slice(buffer.length, input.length);
                         list = false;
                         buffer = "";
@@ -65,13 +69,10 @@ class List extends Type {
 
                             input = result.input;
                             output.push(result.args);
-
-                            console.log(output);
                         } catch (error) {
                             reject(error);
                         }
                     } else {
-                        console.log("BREAK");
                         break;
                     }
                 }
