@@ -17,11 +17,6 @@ class Argument {
     get optional() { return this._optional; }
     setOptional(optional) { this._optional = optional; return this; }
 
-    set(key, value) {
-        this[key] = value;
-        return this;
-    }
-
     parse(separators, input, custom) {
         return new Promise((resolve, reject) => {
             try {

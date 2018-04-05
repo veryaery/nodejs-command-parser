@@ -12,12 +12,19 @@ class Command extends Option {
         super(name);
     }
 
-    // getters and set methods
+    // getters, setters, and set methods
     get commands() { return this._commands; }
+    set commands(commands) { this._commands = commands; }
     setCommands(commands) { this._commands = commands; return this; }
 
     get options() { return this._options; }
+    set options(options) { this._options = options; }
     setOptions(options) { this._options = options; return this; }
+
+    set(key, value) {
+        this[key] = value;
+        return this;
+    }
 
     async parse(separators, input, custom) {
         return new Promise(async (resolve, reject) => {

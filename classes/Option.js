@@ -11,17 +11,14 @@ class Option {
         this._name = name;
     }
 
-    // getters and set methods
+    // getters, setters, and set methods
     get name() { return this._name; }
+    set name(name) { this._name = name; }
     setName(name) { this._name = name; return this; }
 
     get args() { return this._args; }
+    set args(args) { this._args = args; }
     setArgs(args) { this._args = args; return this; }
-
-    set(key, value) {
-        this[key] = value;
-        return this;
-    }
 
     async parse(separators, input, merged, custom) {
         return new Promise(async (resolve, reject) => {
