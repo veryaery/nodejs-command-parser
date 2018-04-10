@@ -21,11 +21,6 @@ class Command extends Option {
     set options(options) { this._options = options; }
     setOptions(options) { this._options = options; return this; }
 
-    set(key, value) {
-        this[key] = value;
-        return this;
-    }
-
     async parse(separators, input, custom) {
         return new Promise(async (resolve, reject) => {
             // if we have commands, check if the input starts with the name of one
@@ -43,8 +38,11 @@ class Command extends Option {
                 }
             }
 
-            // the output object, which is a copy of this object, where the arguments and options are replaced with their parse results
-            let output = { ...this };
+            // the output object, where we put all the parse results
+            let output = {
+                args: {},
+                options: {}
+            };
             output.arguments = {};
             output.options = {};
             
@@ -70,11 +68,19 @@ class Command extends Option {
                         try {
                             const result = await option.value.parse(separators, input, merged, custom);
 
-                            input = result.input;
-                            output.options[option.value.name] = result.args;
+                            // if there's a syntax error, break and resolve the error
+                            if (result.error) {
+                                return resolve({
+                                    command: this,
+                                    error: result.error
+                                });
+                            } else {
+                                input = result.input;
+                                output.options[option.value.name] = result.args;
 
-                            // we parsed the option's arguments. skip our own arguments and check if the input starts with another
-                            continue;
+                                // we parsed the option's arguments. skip our own arguments and check if the input starts with another
+                                continue;
+                            }
                         } catch (error) {
                             return reject(error);
                         }
@@ -88,17 +94,28 @@ class Command extends Option {
                     // input didn't start with the name of an option. parse our own arguments
                     try {
                         const result = await super.parse(separators, input, merged, custom);
-    
-                        parsed = true;
-                        input = result.input;
-                        output.arguments = result.args;
+                        
+                        // if there's a syntax error, break and resolve the error
+                        if (result.error) {
+                            return resolve({
+                                command: this,
+                                error: result.error
+                            });
+                        } else {
+                            parsed = true;
+                            input = result.input;
+                            output.arguments = result.args;
+                        }
                     } catch (error) {
                         return reject(error);
                     }
                 }
             } while (input.length > 0)
 
-            resolve(output);
+            resolve({
+                command: this,
+                output: output
+            });
         });
     }
 

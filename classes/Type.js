@@ -14,7 +14,10 @@ class Type {
     }
 
     parse(separators, input, custom) {
-        return [ input, null ];
+        return {
+            input: input,
+            output: null
+        };
     }
 
     toString() {

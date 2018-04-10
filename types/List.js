@@ -4,6 +4,7 @@ const Promise = require("promise");
 // imports
 const Type = require("../classes/Type.js");
 const Argument = require("../classes/Argument.js");
+const Fault = require("../classes/Fault.js");
 const methods = require("../methods.js");
 
 class List extends Type {
@@ -25,7 +26,7 @@ class List extends Type {
         this._type = type;
     }
 
-    async parse(separators, input, custom) {
+    _parse(separators, input) {
         return new Promise(async (resolve, reject) => {
             const output = [];
             let list = false;
@@ -38,8 +39,14 @@ class List extends Type {
                     ...separators
                 ], input, custom);
 
-                input = result.input;
-                output.push(result.args);
+                // if there's a syntax error, break and resolve the error
+                if (result.error) {
+                    return resolve(result);
+                } else {
+                    input = result.input;
+                    output.push(result.args);
+                }
+
 
                 // while there is still input to be parsed
                 while (input.length > 0) {
@@ -67,8 +74,13 @@ class List extends Type {
                                 ...separators
                             ], input, custom);
 
-                            input = result.input;
-                            output.push(result.args);
+                            // if there's a syntax error, break and resolve the error
+                            if (result.error) {
+                                return resolve(result);
+                            } else {
+                                input = result.input;
+                                output.push(result.output);
+                            }
                         } catch (error) {
                             reject(error);
                         }
@@ -80,7 +92,44 @@ class List extends Type {
                 reject(error);
             }
 
-            resolve([ input, output ]);
+            resolve({
+                input: input,
+                output: output
+            });
+        });
+    }
+
+    async parse(separators, input, custom) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = await this._parse(separators, input);
+                const output = result.output;
+    
+                if (result.error) {
+                    return resolve(result);
+                } else if (this._options.min && output.length < this._options.min) {
+                    return resolve({
+                        error: new Fault("TOO_SMALL", `list must be atleast ${this._options.min} items long`, {
+                            list: output,
+                            min: this._options.min
+                        })
+                    });
+                } else if (this._options.max && output.length > this._options.max) {
+                    return resolve({
+                        error: new Fault("TOO_LARGE", `list must be at maximum ${this._options.max} items long`, {
+                            list: output,
+                            max: this._options.max
+                        })
+                    });
+                }
+
+                resolve({
+                    input: result.input,
+                    output: output
+                });
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 

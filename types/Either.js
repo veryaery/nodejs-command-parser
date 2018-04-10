@@ -37,22 +37,25 @@ class Either extends Type {
 
             if (result) {
                 // input started with one of the strings
-                return resolve([ input.slice(result.length, input.length), result ]);
+                return resolve({
+                    input: input.slice(result.length, input.length),
+                    output: result
+                });
             } else {
                 // input didn't start with one of the string. try each type
                 for (const type of types) {
                     try {
-                        const result = await new Argument().setType(type).parse(separators, input);
-    
-                        return resolve([ result.input, result.args ]);
+                        return resolve(await new Argument().setType(type).parse(separators, input));
                     } catch (error) {}
                 }
             }
 
-            reject(new Fault("NEIHER", `input was neither of ${this._typeString()}`, {
-                input: input,
-                types: this._types
-            }));
+            resolve({
+                error: new Fault("NEIHER", `input was neither of ${this._typeString()}`, {
+                    input: input,
+                    types: this._types
+                })
+            });
         });
     }
 

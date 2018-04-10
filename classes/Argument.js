@@ -9,13 +9,21 @@ class Argument {
 
     // getters and set methods
     get name() { return this._name; }
+    set name(name) { this._name = name; }
     setName(name) { this._name = name; return this; }
 
     get type() { return this._type; }
+    set type(type) { this._type = type; }
     setType(type) { this._type = type; return this; }
 
     get optional() { return this._optional; }
+    set optional(optional) { this._optional = optional; }
     setOptional(optional) { this._optional = optional; return this; }
+
+    set(key, value) {
+        this[key] = value;
+        return this;
+    }
 
     parse(separators, input, custom) {
         return new Promise((resolve, reject) => {
@@ -23,21 +31,11 @@ class Argument {
                 const result = this._type.parse(separators, input, custom);
 
                 if (result instanceof Promise) {
-                    // it's async. wait for and forward the result
                     result
-                        .then(result => {
-                            resolve({
-                                input: result[0],
-                                args: result[1]
-                            })
-                        })
+                        .then(resolve)
                         .catch(reject);
                 } else {
-                    // it's sync. forward the result
-                    resolve({
-                        input: result[0],
-                        args: result[1]
-                    });
+                    resolve(result);
                 }
             } catch (error) {
                 reject(error);

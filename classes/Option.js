@@ -20,6 +20,11 @@ class Option {
     set args(args) { this._args = args; }
     setArgs(args) { this._args = args; return this; }
 
+    set(key, value) {
+        this[key] = value;
+        return this;
+    }
+
     async parse(separators, input, merged, custom) {
         return new Promise(async (resolve, reject) => {
             let args = {};
@@ -44,8 +49,13 @@ class Option {
                     try {
                         const result = await arg.parse(separators, input, custom);
 
-                        input = result.input;
-                        args[arg.name] = result.args;
+                        // if there's a syntax error, break and resolve the error
+                        if (result.error) {
+                            return resolve(result);
+                        } else {
+                            input = result.input;
+                            args[arg.name] = result.output;
+                        }
                     } catch (error) {
                         return reject(error);
                     }
@@ -66,7 +76,7 @@ class Option {
 
                     if (!arg.optional) {
                         // we weren't able to parse all required arguments
-                        return reject(new Fault("REQUIRED", `argument ${arg.name} is required`, { arg: arg }));
+                        return resolve({ error: new Fault("REQUIRED", `argument ${arg.name} is required`, { arg: arg }) });
                     }
                 }
             }
