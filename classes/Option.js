@@ -20,6 +20,10 @@ class Option {
     set args(args) { this._args = args; }
     setArgs(args) { this._args = args; return this; }
 
+    get aliases() { return this._aliases; }
+    set aliases(aliases) { this._aliases = aliases; }
+    setAliases(aliases) { this._aliases = aliases; return this; }
+
     set(key, value) {
         this[key] = value;
         return this;

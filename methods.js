@@ -27,6 +27,12 @@ function merge(input) {
         for (const value of values) {
             // merge all value's names with key
             output[key + value.name] = value;
+
+            if (value.aliases) {
+                for (const alias of value.aliases) {
+                    output[key + alias] = value;
+                }
+            }
         }
     }
 
