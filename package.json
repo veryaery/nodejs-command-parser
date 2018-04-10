@@ -1,6 +1,6 @@
 {
   "name": "xyncp",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "my command parser",
   "main": "index.js",
   "scripts": {
