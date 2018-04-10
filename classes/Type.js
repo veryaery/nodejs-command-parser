@@ -4,8 +4,9 @@ class Type {
         this._options = options;
     }
 
-    // getters and set methods
+    // getters, setters, and set methods
     get options() { return this._options; }
+    set options(options) { this._options = options; }
     setOptions(options) { this._options = options; return this; }
 
     set(key, value) {

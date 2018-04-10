@@ -7,7 +7,7 @@ class Argument {
         this._name = name;
     }
 
-    // getters and set methods
+    // getters, setters, and set methods
     get name() { return this._name; }
     set name(name) { this._name = name; }
     setName(name) { this._name = name; return this; }
