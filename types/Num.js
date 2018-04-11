@@ -120,7 +120,7 @@ class Num extends Type {
 
     parse(separators, input, custom) {
         const result = this._parse(separators, input);
-        
+
         if (!result.valid) {
             // input isn't valid
             return { error: new Fault("NOT_A_NUMBER", "input was not a number", { input: input }) };
@@ -132,6 +132,9 @@ class Num extends Type {
         // add up the values for all symbols
         output += this._parseSymbols(result.symbols, baseObject, false);
         output += this._parseSymbols(result.decimalSymbols, baseObject, true);
+        
+        // if it's a negative number, make it negative
+        output = result.negative ? -output : output;
 
         if (this._options.integer && result.decimal) {
             return { error: new Fault("NOT_AN_INTEGER", `number must be an integer`, { number: output }) };

@@ -47,7 +47,7 @@ function arrayScan(input, matches, caseSensitive) {
     for (const char of input.split("")) {
         cur += caseSensitive ? char : char.toLowerCase();
 
-        for (const item of possible) {
+        for (const item of [ ...possible ]) {
             const name = caseSensitive ? item : item.toLowerCase();
 
             if (name == cur) {
@@ -75,7 +75,7 @@ function objectScan(input, matches, caseSensitive) {
     for (const char of input.split("")) {
         cur += caseSensitive ? char : char.toLowerCase();
 
-        for (const key in possible) {
+        for (const key in { ...possible }) {
             const value = possible[key];
             const name = caseSensitive ? key : key.toLowerCase();
 
