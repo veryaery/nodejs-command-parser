@@ -40,11 +40,9 @@ class Command extends Option {
 
             // the output object, where we put all the parse results
             let output = {
-                args: {},
+                arguments: {},
                 options: {}
             };
-            output.arguments = {};
-            output.options = {};
             
             let merged = null;
             let parsed = false;

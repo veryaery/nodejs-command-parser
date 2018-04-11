@@ -73,19 +73,19 @@ class Str extends Type {
         const output = result.output;
 
         if (this._options.min && output.length < this._options.min) {
-            return resolve({
+            return {
                 error: new Fault("TOO_SMALL", `string must be atleast ${this._options.min}  characters long`, {
                     string: output,
                     min: this._options.min
                 })
-            });
+            };
         } else if (this._options.max && output.length > this._options.max) {
-            return resolve({
+            return {
                 error: new Fault("TOO_LARGE", `string must be at maximum ${this._options.max} characters long`, {
                     string: output,
                     max: this._options.max
                 })
-            });
+            };
         }
 
         return {

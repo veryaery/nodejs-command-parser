@@ -123,7 +123,7 @@ class Num extends Type {
         
         if (!result.valid) {
             // input isn't valid
-            return resolve({ error: new Fault("NOT_A_NUMBER", "input was not a number", { input: input }) });
+            return { error: new Fault("NOT_A_NUMBER", "input was not a number", { input: input }) };
         }
         
         const baseObject = this._baseObject();
@@ -134,21 +134,21 @@ class Num extends Type {
         output += this._parseSymbols(result.decimalSymbols, baseObject, true);
 
         if (this._options.integer && result.decimal) {
-            return resolve({ error: new Fault("NOT_AN_INTEGER", `number must be an integer`, { number: output }) });
+            return { error: new Fault("NOT_AN_INTEGER", `number must be an integer`, { number: output }) };
         } else if (this._options.min && output < this._options.min) {
-            return resolve({
+            return {
                 error: new Fault("TOO_SMALL", `number must be atleast ${this._options.min}`, {
                     number: output,
                     min: this._options.min
                 })
-            });
+            };
         } else if (this._options.max && output > this._options.max) {
-            return resolve({
+            return {
                 error: new Fault("TOO_LARGE", `number must be at maximum ${this._options.max}`, {
                     number: output,
                     max: this._options.max
                 })
-            });
+            };
         }
 
         return {
