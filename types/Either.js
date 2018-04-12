@@ -26,7 +26,7 @@ class Either extends Type {
 
             // catagorize types
             for (const type of this._types) {
-                if (typeof type == "string") {
+                if (type instanceof String) {
                     stringTypes.push(type);
                 } else {
                     types.push(type);
@@ -45,7 +45,11 @@ class Either extends Type {
                 // input didn't start with one of the string. try each type
                 for (const type of types) {
                     try {
-                        return resolve(await new Argument().setType(type).parse(separators, input));
+                        const result = await new Argument().setType(type).parse(separators, input);
+
+                        if (!result.error) {
+                            return resolve(result);
+                        }
                     } catch (error) {}
                 }
             }
