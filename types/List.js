@@ -44,9 +44,8 @@ class List extends Type {
                     return resolve(result);
                 } else {
                     input = result.input;
-                    output.push(result.args);
+                    output.push(result.output);
                 }
-
 
                 // while there is still input to be parsed
                 while (input.length > 0) {
