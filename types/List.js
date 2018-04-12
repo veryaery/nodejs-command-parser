@@ -26,7 +26,7 @@ class List extends Type {
         this._type = type;
     }
 
-    _parse(separators, input) {
+    _parse(separators, input, custom) {
         return new Promise(async (resolve, reject) => {
             const output = [];
             let list = false;
@@ -102,7 +102,7 @@ class List extends Type {
     async parse(separators, input, custom) {
         return new Promise(async (resolve, reject) => {
             try {
-                const result = await this._parse(separators, input);
+                const result = await this._parse(separators, input, custom);
                 const output = result.output;
     
                 if (result.error) {
