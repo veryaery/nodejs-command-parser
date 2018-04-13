@@ -47,19 +47,20 @@ class Str extends Type {
                     if (this._options.stringSeparators.includes(result)) {
                         // found end quotation. break
                         break;
-                    } else if (separators.includes(result)) {
-                        // input started with quotation. we don't need to break
+                    } else {
+                        // found separator, however input started with quotation, we don't need to break
                         output += result;
+                        continue;
                     }
                 } else if (separators.includes(result)) {
-                    // input didn't start with quotation. break
+                    // found separator, input didn't start with quotation, break
                     break;
                 }
-            } else {
-                // input didn't start with something string related. add character to the output
-                output += input[0];
-                input = input.slice(1, input.length);
             }
+
+            // input didn't start with something string related. add character to the output
+            output += input[0];
+            input = input.slice(1, input.length);
         }
 
         return {
