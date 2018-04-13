@@ -40,7 +40,7 @@ class Command extends Option {
 
             // the output object, where we put all the parse results
             let output = {
-                arguments: {},
+                args: {},
                 options: {}
             };
             
@@ -102,7 +102,7 @@ class Command extends Option {
                         } else {
                             parsed = true;
                             input = result.input;
-                            output.arguments = result.args;
+                            output.args = result.args;
                         }
                     } catch (error) {
                         return reject(error);
